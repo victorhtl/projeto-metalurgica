@@ -1,6 +1,13 @@
 import { Model } from 'objection';
 import Client from './client';
 
+export enum BudgetStatus {
+  PaymentPending = 'payment_pending',
+  Approved = 'approved',
+  Delivered = 'delivered',
+  CustomerCanceled = 'customer_canceled',
+}
+
 class Budget extends Model {
   static get tableName() {
     return 'budgets';
@@ -12,6 +19,10 @@ class Budget extends Model {
       required: ['client_id', 'short_description', 'description', 'status'],
       properties: {
         id: { type: 'integer' },
+        client_id: {type: 'integer'},
+        short_description: {type: 'string'},
+        description: {type: 'string'},
+        status: { type: 'string', enum: Object.values(BudgetStatus) },
       }
     };
   }
