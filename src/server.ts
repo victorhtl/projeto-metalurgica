@@ -1,7 +1,7 @@
 import server from './index';
-//import './db';
+import './db';
 
-server.listen({ port: 8080 }, (err, address) => {
+server.listen({ port: 7070 }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
