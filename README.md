@@ -22,3 +22,5 @@
     "status": "payment_pending"
   }
 ```
+
+- ***Endpoint*** GET /budgets -> list all budgets
