@@ -22,6 +22,7 @@ class Budget extends Model {
         client_id: {type: 'integer'},
         short_description: {type: 'string'},
         description: {type: 'string'},
+        price: {type: 'number'},
         status: { type: 'string', enum: Object.values(BudgetStatus) },
       }
     };
