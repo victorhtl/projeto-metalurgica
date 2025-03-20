@@ -21,6 +21,16 @@
         li {
             padding: 10px;
             border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -35,23 +45,33 @@
     </div>
 
     <script>
-      async function fetchData(url, elementId) {
-        try {
-          const response = await fetch(url);
-          const data = await response.json();
-          const listElement = document.getElementById(elementId);
-          if(elementId === 'ticket-list')
-            listElement.innerHTML = data.map(item => `<li>${ item.barcode } ${ item.value }</li>`).join('');
-          if(elementId === 'budget-list')
-            listElement.innerHTML = data.map(item => `<li>${ item.short_description } R$${ item.price } ${ item.status }</li>`).join('');
-
-        } catch (error) {
-          console.error("Erro ao buscar dados:", error);
+        async function fetchData(url, elementId, type) {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const listElement = document.getElementById(elementId);
+                listElement.innerHTML = data.map(item => `
+                    <li>
+                        ${item.description || item.barcode}
+                        <button onclick="deleteItem('${url}/${item.id}', '${elementId}', '${type}')">Excluir</button>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+            }
         }
-      }
         
-        fetchData('/tickets', 'ticket-list');
-        fetchData('/budgets', 'budget-list');
+        async function deleteItem(url, elementId, type) {
+            try {
+                await fetch(url, { method: 'DELETE' });
+                fetchData(`/${type}`, elementId, type); // Recarrega a lista após deletar
+            } catch (error) {
+                console.error("Erro ao deletar item:", error);
+            }
+        }
+        
+        fetchData('/tickets', 'ticket-list', 'tickets');
+        fetchData('/budgets', 'budget-list', 'budgets');
     </script>
 </body>
 </html>
