@@ -1,11 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+        .column {
+            width: 45%;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
-  <h1>Hello World</h1>
+    <div class="column">
+        <h2>Boletos</h2>
+        <ul id="ticket-list"></ul>
+    </div>
+    <div class="column">
+        <h2>Orçamentos</h2>
+        <ul id="budget-list"></ul>
+    </div>
+
+    <script>
+      async function fetchData(url, elementId) {
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+          const listElement = document.getElementById(elementId);
+          if(elementId === 'ticket-list')
+            listElement.innerHTML = data.map(item => `<li>${ item.barcode } ${ item.value }</li>`).join('');
+          if(elementId === 'budget-list')
+            listElement.innerHTML = data.map(item => `<li>${ item.short_description } R$${ item.price } ${ item.status }</li>`).join('');
+
+        } catch (error) {
+          console.error("Erro ao buscar dados:", error);
+        }
+      }
+        
+        fetchData('/tickets', 'ticket-list');
+        fetchData('/budgets', 'budget-list');
+    </script>
 </body>
 </html>
