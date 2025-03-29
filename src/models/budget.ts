@@ -16,13 +16,12 @@ class Budget extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['client_id', 'short_description', 'description', 'status'],
+      required: ['short_description', 'description', 'status'],
       properties: {
         id: { type: 'integer' },
-        client_id: {type: 'integer'},
         short_description: {type: 'string'},
         description: {type: 'string'},
-        price: {type: 'number'},
+        value: {type: 'number'},
         status: { type: 'string', enum: Object.values(BudgetStatus) },
       }
     };
