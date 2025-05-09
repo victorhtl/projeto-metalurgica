@@ -30,6 +30,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
         button {
             background-color: red;
@@ -38,10 +39,14 @@
             padding: 5px 10px;
             cursor: pointer;
         }
-        .new-btn {
-            background-color: green;
+        .copy-btn {
+            background-color: #007BFF;
+        }
+        .new-buttons {
             margin-top: 10px;
-            padding: 8px 12px;
+        }
+        .new-buttons button {
+            background-color: green;
         }
     </style>
 </head>
@@ -52,41 +57,80 @@
         <div class="column">
             <h2>Boletos</h2>
             <ul id="ticket-list"></ul>
-            <button class="new-btn" onclick="location.href='/postTicket'">Novo Boleto</button>
+            <div class="new-buttons">
+                <button onclick="window.location.href='/postTicket'">Novo Boleto</button>
+            </div>
         </div>
         <div class="column">
             <h2>Orçamentos</h2>
             <ul id="budget-list"></ul>
-            <button class="new-btn" onclick="location.href='/postBudget'">Novo Orçamento</button>
+            <div class="new-buttons">
+                <button onclick="window.location.href='/postBudget'">Novo Orçamento</button>
+            </div>
         </div>
     </div>
 
     <script>
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            if (isNaN(date)) return dateStr;
+            return date.toLocaleDateString('pt-BR');
+        }
+
         async function fetchData(url, elementId, type) {
             try {
                 const response = await fetch(url);
                 const data = await response.json();
                 const listElement = document.getElementById(elementId);
-                listElement.innerHTML = data.map(item => `
-                    <li>
-                        ${item.description || item.barcode}
-                        <button onclick="deleteItem('${url}/${item.id}', '${elementId}', '${type}')">Excluir</button>
-                    </li>
-                `).join('');
+                listElement.innerHTML = data.map(item => {
+                    if (type === 'tickets') {
+                        return `
+                            <li>
+                                <div>
+                                    <strong>${formatCurrency(item.value)}</strong> - ${formatDate(item.date)}<br>
+                                    <small>Cod. ${item.barcode}</small>
+                                </div>
+                                <div>
+                                    <button class="copy-btn" onclick="copyToClipboard('${item.barcode}')">Copiar código de barras</button>
+                                    <button onclick="deleteItem('${url}/${item.id}', '${elementId}', '${type}')">Excluir</button>
+                                </div>
+                            </li>
+                        `;
+                    } else {
+                        return `
+                            <li>
+                                ${item.description}
+                                <button onclick="deleteItem('${url}/${item.id}', '${elementId}', '${type}')">Excluir</button>
+                            </li>
+                        `;
+                    }
+                }).join('');
             } catch (error) {
                 console.error("Erro ao buscar dados:", error);
             }
         }
-        
+
         async function deleteItem(url, elementId, type) {
             try {
                 await fetch(url, { method: 'DELETE' });
-                fetchData(`/${type}`, elementId, type); // Recarrega a lista após deletar
+                fetchData(`/${type}`, elementId, type);
             } catch (error) {
                 console.error("Erro ao deletar item:", error);
             }
         }
-        
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Código de barras copiado!");
+            }).catch(err => {
+                console.error("Erro ao copiar: ", err);
+            });
+        }
+
         fetchData('/tickets', 'ticket-list', 'tickets');
         fetchData('/budgets', 'budget-list', 'budgets');
     </script>
