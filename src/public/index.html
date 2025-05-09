@@ -42,6 +42,9 @@
         .copy-btn {
             background-color: #007BFF;
         }
+        .details-btn {
+            background-color: #888;
+        }
         .new-buttons {
             margin-top: 10px;
         }
@@ -92,10 +95,10 @@
                             <li>
                                 <div>
                                     <strong>${formatCurrency(item.value)}</strong> - ${formatDate(item.date)}<br>
-                                    <small>Cod. ${item.barcode}</small>
+                                    <small>${item.barcode}</small>
                                 </div>
                                 <div>
-                                    <button class="copy-btn" onclick="copyToClipboard('${item.barcode}')">Copiar código de barras</button>
+                                    <button class="copy-btn" onclick="copyToClipboard('${item.barcode}')">Copiar</button>
                                     <button onclick="deleteItem('${url}/${item.id}', '${elementId}', '${type}')">Excluir</button>
                                 </div>
                             </li>
@@ -103,8 +106,13 @@
                     } else {
                         return `
                             <li>
-                                ${item.description}
-                                <button onclick="deleteItem('${url}/${item.id}', '${elementId}', '${type}')">Excluir</button>
+                                <div>
+                                    <strong>${formatCurrency(item.value)}</strong> - ${item.short_description}
+                                </div>
+                                <div>
+                                    <button class="details-btn" onclick="window.location.href='/budget/${item.id}'">Detalhes</button>
+                                    <button onclick="deleteItem('${url}/${item.id}', '${elementId}', '${type}')">Excluir</button>
+                                </div>
                             </li>
                         `;
                     }
